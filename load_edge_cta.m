@@ -58,7 +58,7 @@ input(2).Y = 400;
 input(2).T = 60;
 input(2).yref = 32; %um
 input(2).embryoID = 2;
-input(2).last_segmented = 50;
+input(2).last_segmented = 75;
 input(2).fixed = 0;
 input(2).ignore_list = [];
 
@@ -96,12 +96,29 @@ input(4).embryoID = 4;
 input(4).fixed = 0;
 input(4).last_segmented = 95;
 
+input(5).folder2load = '~/Documents/MATLAB/EDGE-1.06/DATA_GUI/char RNAi 08 23 2015 1/Measurements';
+input(5).zslice = 1;
+input(5).actual_z = 8;
+input(5).tref = 20;
+input(5).t0 = 0;
+input(5).ignore_list = [];
+input(5).dt = 9;
+input(5).um_per_px = 0.21255;
+input(5).X = 1000;
+input(5).Y = 400;
+input(5).T = 65;
+input(5).yref = 0; %um
+input(5).embryoID = 5;
+input(5).fixed = 0;
+input(5).last_segmented = 65;
+
 msmts2make = {'membranes--basic_2d--area', ...
+    'Membranes--basic_2d--Area - pixel', ...
     'Membranes--vertices--Vertex-y','Membranes--vertices--Vertex-x',...
     'Membranes--basic_2d--Centroid-x','Membranes--basic_2d--Centroid-y',...
     'Membranes--vertices--Identity of neighbors-all', ...
     'Membranes--vertices--Identity of neighbors', ...
-    'Myosin--myosin_intensity--Myosin intensity' ...
+    'Myosin--myosin_intensity--Myosin intensity', ...
     };
 
 %% Load data (will beep when done)
@@ -121,6 +138,7 @@ stack2load = EDGEstack;
 num_embryos = numel(in);
 
 [areas,IDs,dev_time] = extract_msmt_data(stack2load,'area','on',in);
+pixel_areas = extract_msmt_data(stack2load,'area - pixel','on',in);
 centroids_x = extract_msmt_data(stack2load,'centroid-x','on',in);
 centroids_y = extract_msmt_data(stack2load,'centroid-y','on',in);
 neighborID = extract_msmt_data(stack2load,'identity of neighbors-all','off',in);
@@ -150,23 +168,7 @@ end
 %% myosin
 
 myosins = extract_msmt_data(stack2load,'myosin intensity','on',in);
-% myosin_ring1 = -extract_msmt_data(stack2load,'ring 1','on',in);
-% myosin_ring2 = -extract_msmt_data(stack2load,'ring 2','on',in);
-% myosin_ring3 = -extract_msmt_data(stack2load,'ring 3','on',in);
-% myosin_inside = extract_msmt_data(stack2load,'inside','on',in);
-% myosin_dist2border = extract_msmt_data(stack2load,'distance to border','off',in);
-% [myosin_dist2border{cellfun(@isempty,myosin_dist2border)}] = deal(NaN);
-% myosin_dist2border = cellfun(@nanmean,myosin_dist2border);
-% myosin_size = extract_msmt_data(stack2load,'myosin spot size','off',in);
-% myosin_number = extract_msmt_data(stack2load,'number of myosin spots','off',in);
-% myosin_fraction = extract_msmt_data(stack2load,'fraction of cell area','on',in);
-% myosin_coronal_frac = extract_msmt_data(stack2load,'fraction of coronal area','on',in);
-% myosin_connection = extract_msmt_data(stack2load,'# cells connected by myosin','on',in);
-% myosin_inertia = extract_msmt_data(stack2load,'moment of inertia','on',in);
-% myosin_deviation = extract_msmt_data(stack2load,'deviation from centroid','on',in);
-% myosin_span_x = extract_msmt_data(stack2load,'span-x','on',in);
-% myosin_span_y = extract_msmt_data(stack2load,'span-y','on',in);
-% myosin_perc = extract_msmt_data(stack2load,'# cells connected by myosin','on',in);
+% raw_myosins = -extract_msmt_data(stack2load,'raw myosin intensity','on',in);
 
 myosins_sm = smooth2a(squeeze(myosins),2,0);
 % myosins_fuzzy_sm = smooth2a(squeeze(myosins_fuzzy),1,0);

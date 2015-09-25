@@ -42,13 +42,35 @@ firstCtaApical = [f{:}];
 f = ctaBasal.get_first_fit(fits);
 firstCtaBasal = [f{:}];
 
-bins = linspace(-200,200,20);
-subplot(2,1,1), title('char-RNAi');
-plot_cdf( [firstCharApical.center],bins,'r-'); hold on
-plot_cdf( [firstCharBasal.center],bins,'b-');
+bins = linspace(-200,600,20);
+subplot(2,1,1), 
+plot_pdf( [firstCharApical.center],bins,'r-'); hold on
+plot_pdf( [firstCharBasal.center],bins,'b-'); title('char-RNAi');
 [h,p] = kstest2([firstCharBasal.center],[firstCharApical.center])
 
-subplot(2,1,2), title('cta');
-plot_cdf( [firstCtaApical.center],bins,'r-'); hold on
-plot_cdf( [firstCtaBasal.center],bins,'b-');
+subplot(2,1,2), 
+plot_pdf( [firstCtaApical.center],bins,'r-'); hold on
+plot_pdf( [firstCtaBasal.center],bins,'b-');title('cta');
+xlabel('Dev. time (sec)'); ylabel('PDF')
+legend('Apical nuclei','Basal nuclei')
 [h,p] = kstest2([firstCtaBasal.center],[firstCtaApical.center])
+
+%% Pulse frequency
+
+[freqCharApical, centerCharApical] = charApical.get_frequency(fits);
+[freqCharBasal, centerCharBasal] = charBasal.get_frequency(fits);
+[freqCtaApical, centerCtaApical] = ctaApical.get_frequency(fits);
+[freqCtaBasal, centerCtaBasal] = ctaBasal.get_frequency(fits);
+
+bins = linspace(0,200,20);
+subplot(2,1,1), title('char-RNAi');
+plot_pdf( [freqCharApical{:}],bins,'r-'); hold on
+plot_pdf( [freqCharBasal{:}],bins,'b-');
+[h,p] = kstest2([freqCharApical{:}],[freqCharBasal{:}])
+
+subplot(2,1,2), title('cta');
+plot_pdf( [freqCtaApical{:}],bins,'r-'); hold on
+plot_pdf( [freqCtaBasal{:}],bins,'b-');
+xlabel('Pulse interval (sec)'); ylabel('PDF')
+legend('Apical nuclei','Basal nuclei')
+[h,p] = kstest2([freqCtaApical{:}],[freqCtaBasal{:}])
