@@ -53,31 +53,46 @@ xlim([-250 350])
 Achar = cat(2,pulse_char.getCells.area);
 Acta = cat(2,pulse_cta.getCells.area);
 
-firstCharArea = find_first_non_nan(Achar');
-firstCtaArea = find_first_non_nan(Acta');
+% firstCharArea = find_first_non_nan(Achar');
+% firstCtaArea = find_first_non_nan(Acta');
+%     nanmean( Achar(1:14,[charCells.embryoID] == 1)), ...
+firstCharArea = cat(2, ...
+    nan(1,num_cells(1)),...
+    nanmean( Achar(1:14,[charCells.embryoID] == 2)), ...
+    nanmean( Achar(1:3,[charCells.embryoID] == 5)) );
+
+firstCtaArea = cat(2,...
+    nanmean( Acta(1:57,[ctaCells.embryoID] == 3)), ...
+    nanmean( Acta(1:24,[ctaCells.embryoID] == 4) ) );
 
 f = pulse_char.get_first_fit;
-I = ~cellfun(@isempty,f);
+I = ~cellfun(@isempty,f) & ~isnan(firstCharArea);
 f = [f{I}]; f = [f.center];
 
-% subplot(2,1,1)
-scatter(firstCharArea(I),f),hold on
-[r,p] = corrcoef(firstCharArea(I)',f')
-p = polyfit(firstCharArea(I)',f',1)
-x = linspace(0,100,100); plot(x,polyval(p,x),'b');
+subplot(2,1,1)
+[r,p] = corrcoef(firstCharArea(I)',f','spearman')
+[p,errorS] = polyfit(firstCharArea(I)',f',1)
+x = linspace(0,100,100);
+[yhat,delta] = polyval(p,x,errorS);
+% shadedErrorBar(x,yhat,delta,'b',1); hold on
+scatter(firstCharArea(I),f,'b');hold on
+plot(x,yhat,'b');
 xlabel('First detected apical area (\mum^2)')
 ylabel('Timing of first pulse (sec)')
 title('char-RNAi')
 
 f = pulse_cta.get_first_fit;
-I = ~cellfun(@isempty,f);
+I = ~cellfun(@isempty,f) & ~isnan(firstCtaArea);
 f = [f{I}]; f = [f.center];
 
-% subplot(2,1,2)
-scatter(firstCtaArea(I),f,'r','filled'),hold on
-[r,p] = corrcoef(firstCtaArea(I)',f')
-p = polyfit(firstCtaArea(I)',f',1)
-x = linspace(0,100,100); plot(x,polyval(p,x),'r');
+subplot(2,1,2)
+[r,p] = corrcoef(firstCtaArea(I)',f','spearman')
+[p,errorS] = polyfit(firstCtaArea(I)',f',1)
+x = linspace(0,100,100);
+[yhat,delta] = polyval(p,x,errorS); hold on
+% shadedErrorBar(x,yhat,delta,'r',1);hold on
+scatter(firstCtaArea(I),f,'r','filled');
+plot(x,yhat,'r');
 xlabel('First detected apical area (\mum^2)')
 ylabel('Timing of first pulse (sec)')
 title('cta')

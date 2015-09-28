@@ -18,7 +18,7 @@ for i = 1:numel(charCells)
     
 end
 
-%%
+%% Grab constriction rates
 
 rateChar = nan(size(Achar));
 rateCta = nan(size(Acta));
@@ -39,13 +39,34 @@ for i = 1:numel(ctaCells)
     end
 end
 
+%%
+
 scatter(nanmean(rateChar),firstCharArea,'b','filled')
-[r,p] = corrcoef(nanmean(rateChar)',firstCharArea')
+[r,p] = corrcoef(nanmean(rateChar)',firstCharArea','spearman')
 hold on
 scatter(nanmean(rateCta),firstCtaArea,'r','filled')
-[r,p] = corrcoef(nanmean(rateCta)',firstCtaArea')
+[r,p] = corrcoef(nanmean(rateCta)',firstCtaArea','spearman')
 xlabel('Constriction rate (\mum^2 sec^{-1})')
 ylabel('First detected area (\mum^2)')
 xlim([-.1 .2])
 
+%%
+
+f = pulse_char.get_first_fit;
+I = ~cellfun(@isempty,f);
+f = [f{I}]; f = [f.center];
+
+scatter(nanmean(rateChar(:,I)),f,'b','filled')
+[r,p] = corrcoef(nanmean(rateChar(:,I))',f')
+hold on
+
+f = pulse_cta.get_first_fit;
+I = ~cellfun(@isempty,f);
+f = [f{I}]; f = [f.center];
+
+scatter(nanmean(rateCta(:,I)),f,'r','filled')
+[r,p] = corrcoef(nanmean(rateCta(:,I))',f')
+xlabel('Constriction rate (\mum^2 sec^{-1})')
+ylabel('First detected area (\mum^2)')
+xlim([-.1 .15])
 
