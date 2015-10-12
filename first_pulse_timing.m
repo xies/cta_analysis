@@ -3,12 +3,13 @@ bins = linspace(-400,500,25);
 
 %%
 
-pulse_char = pulse([ 1 2 5 ]);
-pulse_cta = pulse( [ 3 4 ] );
+pulse_char = pulse([ 1 2 5]);
+pulse_cta = pulse( [ 3  4] );
+charCells = pulse_char.getCells;
+ctaCells = pulse_cta.getCells;
 
 %%
 
-charCells = pulse_char.getCells;
 f = pulse_char.get_first_fit;
 
 firstChar = [f{:}];
@@ -28,7 +29,6 @@ xlim([-250 350])
 
 [h,p] = kstest2([firstCharApical.center],[firstCharBasal.center])
 
-ctaCells = pulse_cta.getCells;
 f = pulse_cta.get_first_fit;
 
 firstCta = [f{:}];
@@ -53,16 +53,17 @@ xlim([-250 350])
 Achar = cat(2,pulse_char.getCells.area);
 Acta = cat(2,pulse_cta.getCells.area);
 
-% firstCharArea = find_first_non_nan(Achar');
-% firstCtaArea = find_first_non_nan(Acta');
-%     nanmean( Achar(1:14,[charCells.embryoID] == 1)), ...
+firstCharArea = find_first_non_nan(Achar');
+firstCtaArea = find_first_non_nan(Acta');
+
+% nan(1,num_cells(1)),...
 firstCharArea = cat(2, ...
-    nan(1,num_cells(1)),...
+    nanmean( Achar(1,[charCells.embryoID] == 1),1), ...
     nanmean( Achar(1:14,[charCells.embryoID] == 2)), ...
     nanmean( Achar(1:3,[charCells.embryoID] == 5)) );
 
 firstCtaArea = cat(2,...
-    nanmean( Acta(1:57,[ctaCells.embryoID] == 3)), ...
+    nanmean( Acta(1:30,[ctaCells.embryoID] == 3) ), ...
     nanmean( Acta(1:24,[ctaCells.embryoID] == 4) ) );
 
 f = pulse_char.get_first_fit;

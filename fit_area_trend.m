@@ -1,72 +1,27 @@
 %% Fit area trend
 
-for i = 1:numel(charCells)
-    
-    A = charCells(i).area;
-    I = ~isnan(A);
-    x = charCells(i).dev_time';
-    pChar(i,:) = polyfit(x(I),A(I),1);
-    
-end
-
-for i = 1:numel(charCells)
-    
-    A = ctaCells(i).area;
-    I = ~isnan(A);
-    x = ctaCells(i).dev_time';
-    pCta(i,:) = polyfit(x(I),A(I),1);
-    
-end
-
-%% Grab constriction rates
-
-rateChar = nan(size(Achar));
-rateCta = nan(size(Acta));
-
-for i = 1:numel(charCells)
-    I = ~isnan(charCells(i).area);
-    if numel(I(I)) > 10
-        rateChar(I,i) = -central_diff_multi( ...
-            charCells(i).area(I), charCells(i).dev_time(I) );
-    end
-end
-
-for i = 1:numel(ctaCells)
-    I = ~isnan(ctaCells(i).area);
-    if numel(I(I)) > 10
-        rateCta(I,i) = -central_diff_multi( ...
-            ctaCells(i).area(I), ctaCells(i).dev_time(I) );
-    end
-end
+find_first = @(t) t < -250;
+find_before = @(t) ( t < 50 & t > -50 );
+find_after = @(t) ( t > 200 & t < 300 );
 
 %%
 
-scatter(nanmean(rateChar),firstCharArea,'b','filled')
-[r,p] = corrcoef(nanmean(rateChar)',firstCharArea','spearman')
-hold on
-scatter(nanmean(rateCta),firstCtaArea,'r','filled')
-[r,p] = corrcoef(nanmean(rateCta)',firstCtaArea','spearman')
-xlabel('Constriction rate (\mum^2 sec^{-1})')
-ylabel('First detected area (\mum^2)')
-xlim([-.1 .2])
+c = pulse_cta(1).getCells;
 
-%%
+firstArea = nan(1,numel(c));
+A_resp = nan(1,numel(c));
 
-f = pulse_char.get_first_fit;
-I = ~cellfun(@isempty,f);
-f = [f{I}]; f = [f.center];
+for i = 1:numel(c)
+    t = c(i).dev_time; I = ~isnan(t);
+    Ifirst = find_first(t);
+    Ibefore = find_before(t);
+    Iafter = find_after(t);
+    firstArea(i) = nanmean(c(i).area_sm(Ifirst));
+    ar = central_diff( c(i).area_sm(I) ,t(I) );
+    A_resp(i) = nanmean( ar(~Ifirst(I)) );
+%     A_resp(i) = nanmean(c(i).area_sm(Iafter)) - nanmean(c(i).area_sm(Ibefore));
+end
 
-scatter(nanmean(rateChar(:,I)),f,'b','filled')
-[r,p] = corrcoef(nanmean(rateChar(:,I))',f')
-hold on
+scatter(firstArea,A_resp,'r');
 
-f = pulse_cta.get_first_fit;
-I = ~cellfun(@isempty,f);
-f = [f{I}]; f = [f.center];
-
-scatter(nanmean(rateCta(:,I)),f,'r','filled')
-[r,p] = corrcoef(nanmean(rateCta(:,I))',f')
-xlabel('Constriction rate (\mum^2 sec^{-1})')
-ylabel('First detected area (\mum^2)')
-xlim([-.1 .15])
-
+[r,p] = corrcoef( firstArea', A_resp' ,'spearman')
