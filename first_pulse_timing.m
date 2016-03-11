@@ -1,10 +1,10 @@
 
-bins = linspace(-400,500,25);
+bins = linspace(-800,600,25);
 
 %%
 
 pulse_char = pulse([ 1 2 5]);
-pulse_cta = pulse( [ 3  4] );
+pulse_cta = pulse( [ 3 4 6] );
 charCells = pulse_char.getCells;
 ctaCells = pulse_cta.getCells;
 
@@ -29,11 +29,12 @@ xlim([-250 350])
 
 [h,p] = kstest2([firstCharApical.center],[firstCharBasal.center])
 
+%%
 f = pulse_cta.get_first_fit;
 
 firstCta = [f{:}];
-firstCtaApical = [f{[ctaCells.label]}];
-firstCtaBasal = [f{~[ctaCells.label]}];
+firstCtaApical = [f{[ctaCells.label] == 1}];
+firstCtaBasal = [f{[ctaCells.label] == 2}];
 
 subplot(2,1,2)
 plot_pdf([firstCtaApical.center],bins,'r-');
