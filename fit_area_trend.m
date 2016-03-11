@@ -1,3 +1,4 @@
+
 %% Fit area trend
 
 find_first = @(t) t < -100;

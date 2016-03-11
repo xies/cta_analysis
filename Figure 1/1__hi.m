@@ -2,5 +2,4 @@
 
 % Need: embryo_stack containing cta
 
-%% h: WT
-
+%% h: ...
