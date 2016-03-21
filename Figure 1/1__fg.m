@@ -25,7 +25,6 @@ imagesc(tbins,est_bins,est'); colormap hot; colorbar; axis tight xy;
 xlabel('Time (sec)'); ylabel('Apical area (\mum^2)')
 % legend(num2str(tbins(:)));
 
-
 %% g: cta KDEs
 
 embryoID = [3 4 6];
